@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+:root {
+  --color-main: #36316A;
+  --color-lighter: #6058B3;
+  --color-medium: #7F77D7;
+  --color-light: #A79FFB;
+  --color-lightest: #DFDCFF;
+  --color-superwhite: #F2F0FE;
+}
+
+.font-fraunces {
+  font-family: var(--font-fraunces), serif;
+}
+
+.font-montserrat {
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+.logo-novidia {
+  font-family: var(--font-fraunces), serif;
+  font-weight: 700;
+  font-smooth: always;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-variation-settings:
+    "SOFT" 100,
+    "WONK" 0;
+}
+
+.bg-main { background-color: var(--color-main); }
+#bg-lighter { background-color: var(--color-lighter); }
+.bg-medium { background-color: var(--color-medium); }
+.bg-light { background-color: var(--color-light); }
+.bg-lightest { background-color: var(--color-lightest); }
+.bg-superwhite { background-color: var(--color-superwhite); }
+
+.text-main { color: var(--color-main); }
+.text-lighter { color: var(--color-lighter); }
+.text-medium { color: var(--color-medium); }
+.text-light { color: var(--color-light); }
+.text-lightest { color: var(--color-lightest); }
+.text-superwhite { color: var(--color-superwhite); }
