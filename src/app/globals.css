@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @import "tailwindcss";
 
 :root {
@@ -41,3 +42,6 @@
 .text-light { color: var(--color-light); }
 .text-lightest { color: var(--color-lightest); }
 .text-superwhite { color: var(--color-superwhite); }
+=======
+@import "tailwindcss";
+>>>>>>> a624eadd300e4552aea6f7f1200760ad80072302
