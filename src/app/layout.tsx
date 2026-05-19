@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-<<<<<<< HEAD
 import Navbar from "./components/navigation/navbar";
-=======
->>>>>>> a624eadd300e4552aea6f7f1200760ad80072302
 import { Fraunces, Montserrat } from "next/font/google";
 import "./globals.css";
 
@@ -104,7 +101,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${fraunces.variable} ${montserrat.variable}`}>
-<<<<<<< HEAD
       <body className="bg-zinc-100">
         <Navbar navigation={[
           { id: "1", title: "Główna", url: "/" },
@@ -124,9 +120,6 @@ export default function RootLayout({
         ]} />
         {children}
       </body>
-=======
-      <body className="bg-zinc-100">{children}</body>
->>>>>>> a624eadd300e4552aea6f7f1200760ad80072302
     </html>
   );
 }

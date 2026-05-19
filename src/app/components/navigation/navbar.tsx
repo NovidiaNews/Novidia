@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Atom, BookOpen, ChevronDown, Cpu, Film, Search } from "lucide-react";
+import { Activity, Atom, BookOpen, ChevronDown, Cpu, Film, Menu, Search } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -45,7 +45,7 @@ export default function Navbar({ navigation }: NavbarProps) {
                 <Link href="/">
                     <p className="text-xl logo-novidia text-main ">Novidia.</p>
                 </Link>
-                <ul className="flex items-center gap-6 font-montserrat">
+                <ul className="sm:flex hidden items-center gap-6 font-montserrat">
                     {navigation.map((item) => (
                         <li key={item.id} className="relative">
                             {item.children?.length ? (
@@ -90,8 +90,8 @@ export default function Navbar({ navigation }: NavbarProps) {
                         </li>
                     ))}
                 </ul>
-                <div className="w-full" />
-                <ul className="flex items-center gap-4 h-full">
+                <div className="w-full"/>
+                <ul className="sm:flex hidden items-center gap-4 h-full">
                     <li>
                         <Link
                             href="/search"
@@ -109,7 +109,7 @@ export default function Navbar({ navigation }: NavbarProps) {
                     <li>
                         <Link
                             href="/register"
-                            className="inline-flex items-center gap-2 w-fit rounded-full bg-main hover:bg-lighter px-6 py-2 text-sm text-white transition-colors"
+                            className="inline-flex items-center gap-2 w-fit rounded-full bg-main hover:bg-lighter px-6 py-2 text-sm text-white transition-all hover:brightness-150 brightness-100"
                         >
                             <p className="text-nowrap font-montserrat font-medium">Zarejestruj się</p>
                         </Link>
@@ -121,6 +121,19 @@ export default function Navbar({ navigation }: NavbarProps) {
                         >
                             <p className="text-nowrap font-montserrat font-medium">Zaloguj się</p>
                         </Link>
+                    </li>
+                </ul>
+                <ul className="sm:hidden flex row items-center gap-4 h-full">
+                    <li className="flex row gap-4">
+                        <Link
+                            href="/search"
+                            className="group inline-flex overflow-clip transition-all gap-0 items-center rounded-full bg-zinc-50 text-sm text-zinc-700 hover:text-zinc-800"
+                        >
+                            <Search className="h-6 w-6 text-zinc-400 transition-colors group-hover:text-zinc-600" />
+                        </Link>
+                        <button>
+                                <Menu className="h-6 w-6 text-zinc-400 transition-colors group-hover:text-zinc-600 bg-zinc-50 text-sm hover:text-zinc-800"/>
+                        </button>
                     </li>
                 </ul>
             </div>
