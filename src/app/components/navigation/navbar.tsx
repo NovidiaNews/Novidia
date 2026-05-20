@@ -40,10 +40,10 @@ export default function Navbar({ navigation }: NavbarProps) {
     }
 
     return (
-        <nav className="bg-zinc-50 px-8 py-6">
+        <nav className="bg-zinc-50 px-8 py-6 z-100">
             <div className="flex items-center gap-6">
                 <Link href="/">
-                    <p className="text-xl logo-novidia text-main ">Novidia.</p>
+                    <p className="text-xl logo-novidia text-main">Novidia.</p>
                 </Link>
                 <ul className="sm:flex hidden items-center gap-6 font-montserrat">
                     {navigation.map((item) => (

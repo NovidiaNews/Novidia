@@ -1,76 +1,192 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import QUOTES from "./data/quotes";
 
-const QUOTES = [
-    "Nie poddawaj się; każdy krok, nawet najmniejszy, zbliża cię do upragnionego celu.",
-    "Trudności są szansą — ucz się z nich i idź dalej z podniesioną głową.",
-    "Wytrwałość potrafi przemienić marzenia w rzeczywistość, daj sobie czas i wiarę.",
-    "Zacznij tam, gdzie jesteś, z tym, co masz — ruch naprzód ma znaczenie każdego dnia.",
-    "Każdy nowy dzień to przestrzeń na odważne decyzje i małe zwycięstwa, z których wyrasta wielki sukces.",
-];
+type Img = {
+  src?: string;
+  preview?: string;
+  avgColor?: string;
+  credit?: string;
+};
 
 export default function NotFound() {
-    const [image, setImage] = useState<{ src?: string; credit?: string }>({});
-    const [quote, setQuote] = useState(QUOTES[0]);
+  const [creditLoaded, setCreditLoaded] = useState(false);
+  const [image, setImage] = useState<Img>({});
+  const [quote, setQuote] = useState(QUOTES[0]);
+  const [loaded, setLoaded] = useState(false);
+  const loaderRef = useRef<HTMLSpanElement | null>(null);
+  const quoteLoaderRef = useRef<HTMLSpanElement | null>(null);
+  const [quoteLoading, setQuoteLoading] = useState(true);
 
-    useEffect(() => {
-        async function load() {
-            try {
-                const res = await fetch("/api/pexels?count=8");
-                if (!res.ok) throw new Error("Pexels API error");
-                const data = await res.json();
-                const photos = data.photos || [];
-                if (photos.length) {
-                    setImage(photos[Math.floor(Math.random() * photos.length)]);
-                }
-                setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
-            } catch (err) {
-                console.error(err);
-            }
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch("/api/pexels?count=8", {
+          cache: "no-store",
+        });
+
+        if (!res.ok) throw new Error("Pexels API error");
+
+        const data = await res.json();
+        const photos = data.photos || [];
+
+        if (photos.length) {
+          const selected = photos[Math.floor(Math.random() * photos.length)];
+          setImage(selected);
         }
-        load();
-    }, []);
 
-    return (
-        <div className="w-full h-screen absolute inset-0">
-            <main className="relative w-full h-screen flex flex-row gap-6 p-4 pt-25">
-                <div className="w-full h-full rounded-2xl bg-zinc-50 overflow-hidden relative">
-                    <div className="relative inset-0 flex flex-col items-stretch h-full w-full ">
-                        <div className="z-10 flex w-full h-full flex-col justify-between items-center p-4">
-                            <div className="w-full h-fit flex items-center justify-start p-4 relative">
-                                <h1 className="text-sm font-medium font-montserrat text-zinc-200">{image.credit ?? "Pexels"}</h1>
-                            </div>
-                            <div className="w-full h-fit flex items-center justify-start p-4 relative">
-                                <p className="text-4xl font-bold text-zinc-200 font-fraunces text-shadow-lg">{quote}</p>
-                            </div>
-                        </div>
+        setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+        setQuoteLoading(false);
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
-                        <div className="z-0 absolute inset-0 w-full h-full">
-                            <div className="relative w-full h-full">
-                                {image.src ? (
-                                    <Image src={image.src} loading="eager" alt="Image for the 404 page" fill className="object-cover" priority />
-                                ) : (
-                                    <div className="w-full h-full from-zinc-900 to-zinc-950" />
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    load();
+  }, []);
 
-                <div className="w-full h-full rounded-2xl bg-zinc-50 flex items-center justify-center">
-                    <div className="w-full max-w-lg p-8">
-                        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">404</p>
-                        <h1 className="mt-4 text-5xl font-bold tracking-tight text-main font-fraunces">Ta strona nie istnieje :(</h1>
-                        <p className="mt-6 max-w-xl text-base leading-7 text-slate-600">Sprawdź adres URL lub wróć na stronę główną, aby kontynuować.</p>
-                        <Link href="/" className="mt-10 inline-flex w-full max-w-xs items-center justify-center rounded-md bg-main px-5 py-3 text-sm font-semibold text-white transition hover:bg-lighter">
-                            ← Powrót na stronę główną
-                        </Link>
-                    </div>
-                </div>
-            </main>
+  useEffect(() => {
+    let el: HTMLElement | null = null;
+    let elQuote: HTMLElement | null = null;
+    let registered = false;
+
+    async function setupDotPulse() {
+      try {
+        const ldrs = await import("ldrs");
+        if (ldrs?.dotPulse?.register) {
+          ldrs.dotPulse.register();
+          registered = true;
+        }
+
+        if (loaderRef.current) {
+          el = document.createElement("l-dot-pulse");
+          el.setAttribute("size", "20");
+          el.setAttribute("speed", "1.3");
+          el.setAttribute("color", "white");
+          loaderRef.current.appendChild(el);
+        }
+
+        if (quoteLoaderRef.current) {
+          elQuote = document.createElement("l-dot-pulse");
+          elQuote.setAttribute("size", "24"); // Slightly larger for readability alongside large text
+          elQuote.setAttribute("speed", "1.3");
+          elQuote.setAttribute("color", "white");
+          quoteLoaderRef.current.appendChild(elQuote);
+        }
+      } catch (err) {
+        console.warn("ldrs dotPulse load failed", err);
+      }
+    }
+
+    setupDotPulse();
+
+    return () => {
+      if (el && el.parentNode) el.parentNode.removeChild(el);
+      if (elQuote && elQuote.parentNode) elQuote.parentNode.removeChild(elQuote);
+      registered = false;
+    };
+  }, []);
+
+  return (
+    <div className="w-full h-screen absolute inset-0 pointer-events-none">
+      <main className="relative w-full h-screen flex flex-row gap-6 p-4 pt-25 ">
+
+        {/* LEFT SIDE */}
+        <div className="w-full h-full rounded-2xl overflow-hidden relative pointer-events-auto">
+
+          {/* COLOR BACKGROUND (instant, no flash) */}
+          <div
+            className="absolute inset-0 transition-colors duration-500"
+            style={{ backgroundColor: image.avgColor || "#000" }}
+          />
+
+          {/* IMAGES */}
+          <div className="absolute inset-0">
+
+            {/* PREVIEW (blurred) */}
+            {image.preview && (
+              <Image
+                src={image.preview}
+                alt="Preview"
+                fill
+                unoptimized
+                className={`object-cover scale-105 blur-xl transition-opacity duration-500 ${loaded ? "opacity-0" : "opacity-100"
+                  }`}
+              />
+            )}
+
+            {/* FULL RES */}
+            {image.src && (
+              <Image
+                src={image.src}
+                alt="Background"
+                fill
+                priority
+                unoptimized
+                onLoad={() => {
+                  setLoaded(true);
+                  setCreditLoaded(true);
+                }}
+                className={`object-cover transition-opacity duration-700 ${loaded ? "opacity-100" : "opacity-0"
+                  }`}
+              />
+            )}
+          </div>
+
+          {/* DARK OVERLAY (readability) */}
+          <div className="absolute inset-0 z-1 bg-linear-to-t from-zinc-800 via-25% via-transparent via-75% to-zinc-800 opacity-75" />
+
+          {/* TEXT */}
+          <div className="z-10 absolute inset-0 flex flex-col justify-between p-6">
+            <h1 className="text-sm font-medium text-zinc-300 flex items-center gap-2">
+              {!creditLoaded ? (
+                <span ref={loaderRef} />
+              ) : (
+                <>
+                  {image.credit?.replace(" - Pexels", "") || "Pexels"} - Pexels
+                </>
+              )}
+            </h1>
+
+            <div className="text-4xl font-bold text-white font-fraunces! drop-shadow-xl max-w-2xl min-h-3rem flex items-center">
+              {quoteLoading ? (
+                <span ref={quoteLoaderRef} className="inline-flex items-center">
+                </span>
+              ) : (
+                <p>{quote}</p>
+              )}
+            </div>
+          </div>
         </div>
-    );
+
+        {/* RIGHT SIDE */}
+        <div className="w-full h-full rounded-2xl bg-zinc-50 flex items-center justify-center pointer-events-auto">
+          <div className="w-full max-w-lg p-8">
+            <p className="text-sm font-semibold uppercase text-zinc-400">
+              404
+            </p>
+
+            <h1 className="mt-4 text-5xl font-bold tracking-tight text-main font-fraunces">
+              Ta strona nie istnieje :(
+            </h1>
+
+            <p className="mt-6 text-base leading-7 text-zinc-600">
+              Sprawdź adres URL lub wróć na stronę główną, aby kontynuować.
+            </p>
+
+            <Link
+              href="/"
+              className="mt-10 inline-flex w-full max-w-xs items-center justify-center rounded-md bg-main px-5 py-3 text-sm font-semibold text-white transition hover:bg-lighter"
+            >
+              ← Powrót na stronę główną
+            </Link>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  );
 }
