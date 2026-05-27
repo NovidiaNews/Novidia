@@ -92,7 +92,7 @@ export default function NotFound() {
 
   return (
     <div className="w-full h-screen absolute inset-0 pointer-events-none">
-      <main className="relative w-full h-screen flex flex-row gap-6 p-4 pt-25 ">
+      <main className="relative w-full h-screen flex flex-col md:flex-row gap-6 p-4 pt-25 ">
 
         {/* LEFT SIDE */}
         <div className="w-full h-full rounded-2xl overflow-hidden relative pointer-events-auto">
@@ -140,7 +140,7 @@ export default function NotFound() {
           <div className="absolute inset-0 z-1 bg-linear-to-t from-zinc-800 via-25% via-transparent via-75% to-zinc-800 opacity-75" />
 
           {/* TEXT */}
-          <div className="z-10 absolute inset-0 flex flex-col justify-between p-6">
+          <div className="z-10 absolute inset-0 flex flex-col justify-between p-10">
             <h1 className="text-sm font-medium text-zinc-300 flex items-center gap-2">
               {!creditLoaded ? (
                 <span ref={loaderRef} />
@@ -156,33 +156,31 @@ export default function NotFound() {
                 <span ref={quoteLoaderRef} className="inline-flex items-center">
                 </span>
               ) : (
-                <p>{quote}</p>
+                <p className="font-fraunces">{quote}</p>
               )}
             </div>
           </div>
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="w-full h-full rounded-2xl bg-zinc-50 flex items-center justify-center pointer-events-auto">
-          <div className="w-full max-w-lg p-8">
-            <p className="text-sm font-semibold uppercase text-zinc-400">
-              404
-            </p>
+        <div className="w-full h-full rounded-2xl bg-zinc-50 flex items-center justify-center pointer-events-auto p-2">
+          <div className="w-full max-w-lg flex flex-col gap-8">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-7xl font-bold tracking-tight text-main text-center font-fraunces">
+                404
+              </h1>
 
-            <h1 className="mt-4 text-5xl font-bold tracking-tight text-main font-fraunces">
-              Ta strona nie istnieje :(
-            </h1>
+              <p className="text-base leading-7 text-zinc-600 text-center">
+                Ta strona nie istnieje :(
+              </p>
+            </div>
 
-            <p className="mt-6 text-base leading-7 text-zinc-600">
-              Sprawdź adres URL lub wróć na stronę główną, aby kontynuować.
-            </p>
-
-            <Link
-              href="/"
-              className="mt-10 inline-flex w-full max-w-xs items-center justify-center rounded-md bg-main px-5 py-3 text-sm font-semibold text-white transition hover:bg-lighter"
-            >
-              ← Powrót na stronę główną
-            </Link>
+              <Link
+                href="/"
+                className="w-full h-fit px-12 py-4 bg-main text-center text-zinc-50 rounded-xl font-fraunces brightness-100 hover:brightness-125 transition-all"
+              >
+                ← Powrót na stronę główną
+              </Link>
           </div>
         </div>
 

@@ -45,7 +45,7 @@ export default function Navbar({ navigation }: NavbarProps) {
                 <Link href="/">
                     <p className="text-xl logo-novidia text-main">Novidia.</p>
                 </Link>
-                <ul className="sm:flex hidden items-center gap-6 font-montserrat">
+                <ul className="xl:flex hidden items-center gap-6 font-montserrat">
                     {navigation.map((item) => (
                         <li key={item.id} className="relative">
                             {item.children?.length ? (
@@ -91,7 +91,7 @@ export default function Navbar({ navigation }: NavbarProps) {
                     ))}
                 </ul>
                 <div className="w-full"/>
-                <ul className="sm:flex hidden items-center gap-4 h-full">
+                <ul className="xl:flex hidden items-center gap-4 h-full">
                     <li>
                         <Link
                             href="/search"
@@ -123,7 +123,7 @@ export default function Navbar({ navigation }: NavbarProps) {
                         </Link>
                     </li>
                 </ul>
-                <ul className="sm:hidden flex row items-center gap-4 h-full">
+                <ul className="xl:hidden flex row items-center gap-4 h-full">
                     <li className="flex row gap-4">
                         <Link
                             href="/search"
