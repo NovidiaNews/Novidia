@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Navbar from "./components/navigation/navbar";
 import { Fraunces, Montserrat } from "next/font/google";
 import "./globals.css";
+import CookieModal from "./components/CookieModal";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -119,6 +120,7 @@ export default function RootLayout({
           },
         ]} />
         {children}
+        <CookieModal />
       </body>
     </html>
   );

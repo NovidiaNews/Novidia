@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Atom, BookOpen, ChevronDown, ChevronRight, ChevronLeft, Cpu, Film, Menu, Search, X, Loader2 } from "lucide-react";
+import { Activity, Atom, BookOpen, ChevronDown, ChevronRight, ChevronLeft, Cpu, Film, Menu, Search, X, Loader2, LogOut, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -38,6 +38,51 @@ export default function Navbar({ navigation }: NavbarProps) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
     const router = useRouter();
+    
+    // Auth State
+    const [user, setUser] = useState<{ username: string; email: string; profilePicture?: string } | null>(null);
+    const [isAuthDropdownOpen, setIsAuthDropdownOpen] = useState(false);
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("novidia_user");
+        const storedToken = localStorage.getItem("novidia_token");
+        if (storedUser && storedToken) {
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (e) {
+                // Ignore
+            }
+        }
+        
+        // Listen to storage changes to keep Navbar in sync
+        const handleStorageChange = () => {
+            const stored = localStorage.getItem("novidia_user");
+            if (stored) {
+                try {
+                    setUser(JSON.parse(stored));
+                } catch (e) {
+                    setUser(null);
+                }
+            } else {
+                setUser(null);
+            }
+        };
+        window.addEventListener("storage", handleStorageChange);
+        window.addEventListener("novidia_auth_change", handleStorageChange);
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+            window.removeEventListener("novidia_auth_change", handleStorageChange);
+        };
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem("novidia_token");
+        localStorage.removeItem("novidia_user");
+        setUser(null);
+        setIsAuthDropdownOpen(false);
+        window.dispatchEvent(new Event("novidia_auth_change"));
+        router.push("/");
+    };
     
     // Search state
     const [isSearchActive, setIsSearchActive] = useState(false);
@@ -236,12 +281,55 @@ export default function Navbar({ navigation }: NavbarProps) {
                     {/* DESKTOP AUTH */}
                     <div className="xl:flex hidden items-center gap-4 transition-all duration-300">
                         <div className="w-0.5 h-4 bg-zinc-200 shrink-0"></div>
-                        <Link href="/register" className="shrink-0 inline-flex items-center gap-2 rounded-full bg-main hover:brightness-110 px-6 py-2 text-sm text-white transition-all">
-                            <span className="text-nowrap font-montserrat font-medium">Zarejestruj się</span>
-                        </Link>
-                        <Link href="/login" className="shrink-0 inline-flex items-center gap-2 rounded-full bg-zinc-200 px-6 py-2 text-sm text-zinc-800 hover:bg-zinc-300 transition-colors">
-                            <span className="text-nowrap font-montserrat font-medium">Zaloguj się</span>
-                        </Link>
+                        {user ? (
+                            <div className="relative">
+                                <button
+                                    onClick={() => setIsAuthDropdownOpen(!isAuthDropdownOpen)}
+                                    className="flex items-center gap-2 cursor-pointer hover:opacity-85 transition-opacity"
+                                >
+                                    {user.profilePicture ? (
+                                        user.profilePicture.startsWith("<svg") ? (
+                                            <div 
+                                                className="w-10 h-10 rounded-full overflow-hidden border border-zinc-200 bg-white"
+                                                dangerouslySetInnerHTML={{ __html: user.profilePicture }}
+                                            />
+                                        ) : (
+                                            <img
+                                                src={user.profilePicture}
+                                                alt={user.username}
+                                                className="w-10 h-10 rounded-full object-cover border border-zinc-200"
+                                            />
+                                        )
+                                    ) : (
+                                        <div className="w-10 h-10 rounded-full bg-zinc-200 flex items-center justify-center text-zinc-600">
+                                            <UserIcon size={18} />
+                                        </div>
+                                    )}
+                                    <span className="text-sm font-semibold text-zinc-700 font-montserrat">{user.username}</span>
+                                    <ChevronDown size={16} className={`text-zinc-500 transition-transform ${isAuthDropdownOpen ? "rotate-180" : ""}`} />
+                                </button>
+                                {isAuthDropdownOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 rounded-2xl border border-zinc-200 bg-white p-2 shadow-lg z-50">
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors cursor-pointer text-left"
+                                        >
+                                            <LogOut size={16} />
+                                            <span>Wyloguj się</span>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <>
+                                <Link href="/register" className="shrink-0 inline-flex items-center gap-2 rounded-full bg-main hover:brightness-110 px-6 py-2 text-sm text-white transition-all">
+                                    <span className="text-nowrap font-montserrat font-medium">Zarejestruj się</span>
+                                </Link>
+                                <Link href="/login" className="shrink-0 inline-flex items-center gap-2 rounded-full bg-zinc-200 px-6 py-2 text-sm text-zinc-800 hover:bg-zinc-300 transition-colors">
+                                    <span className="text-nowrap font-montserrat font-medium">Zaloguj się</span>
+                                </Link>
+                            </>
+                        )}
                     </div>
 
                     {/* MOBILE BURGER */}
@@ -337,20 +425,57 @@ export default function Navbar({ navigation }: NavbarProps) {
                         <div className={`mt-auto pt-8 flex flex-col gap-4 border-t border-zinc-200 transition-all duration-500 transform ${
                              isMobileMenuOpen && !activeSubmenu ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
                         }`} style={{ transitionDelay: `${navigation.length * 50}ms` }}>
-                            <Link
-                                href="/register"
-                                onClick={(e) => handleMobileNav(e, "/register")}
-                                className="w-full text-center rounded-full bg-main py-4 text-lg text-white font-montserrat font-medium transition-all hover:brightness-110"
-                            >
-                                Zarejestruj się
-                            </Link>
-                            <Link
-                                href="/login"
-                                onClick={(e) => handleMobileNav(e, "/login")}
-                                className="w-full text-center rounded-full bg-zinc-200 py-4 text-lg text-zinc-800 font-montserrat font-medium hover:bg-zinc-300 transition-colors"
-                            >
-                                Zaloguj się
-                            </Link>
+                            {user ? (
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex items-center gap-3 p-3 bg-zinc-100 rounded-2xl">
+                                        {user.profilePicture ? (
+                                            user.profilePicture.startsWith("<svg") ? (
+                                                <div 
+                                                    className="w-12 h-12 rounded-full overflow-hidden border border-zinc-200 bg-white"
+                                                    dangerouslySetInnerHTML={{ __html: user.profilePicture }}
+                                                />
+                                            ) : (
+                                                <img
+                                                    src={user.profilePicture}
+                                                    alt={user.username}
+                                                    className="w-12 h-12 rounded-full object-cover border border-zinc-200"
+                                                />
+                                            )
+                                        ) : (
+                                            <div className="w-12 h-12 rounded-full bg-zinc-200 flex items-center justify-center text-zinc-600">
+                                                <UserIcon size={22} />
+                                            </div>
+                                        )}
+                                        <div className="flex flex-col">
+                                            <span className="text-base font-bold text-zinc-800 font-montserrat">{user.username}</span>
+                                            <span className="text-xs text-zinc-500 font-montserrat">{user.email}</span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full text-center rounded-full bg-red-100 py-4 text-lg text-red-700 font-montserrat font-semibold hover:bg-red-200 transition-colors cursor-pointer"
+                                    >
+                                        Wyloguj się
+                                    </button>
+                                </div>
+                            ) : (
+                                <>
+                                    <Link
+                                        href="/register"
+                                        onClick={(e) => handleMobileNav(e, "/register")}
+                                        className="w-full text-center rounded-full bg-main py-4 text-lg text-white font-montserrat font-medium transition-all hover:brightness-110"
+                                    >
+                                        Zarejestruj się
+                                    </Link>
+                                    <Link
+                                        href="/login"
+                                        onClick={(e) => handleMobileNav(e, "/login")}
+                                        className="w-full text-center rounded-full bg-zinc-200 py-4 text-lg text-zinc-800 font-montserrat font-medium hover:bg-zinc-300 transition-colors"
+                                    >
+                                        Zaloguj się
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
 
