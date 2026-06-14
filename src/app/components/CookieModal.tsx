@@ -10,24 +10,6 @@ export default function CookieModal() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
 
-  useEffect(() => {
-    const consent = localStorage.getItem("novidia_cookie_consent");
-    if (!consent) {
-      setShowModal(true);
-    } else {
-      try {
-        const parsed = JSON.parse(consent);
-        if (parsed.analytics) {
-          loadGA();
-        } else {
-          disableGA();
-        }
-      } catch (e) {
-        setShowModal(true);
-      }
-    }
-  }, []);
-
   const loadGA = () => {
     if (typeof window === "undefined") return;
     delete (window as any)[`ga-disable-${GA_MEASUREMENT_ID}`];
@@ -55,6 +37,24 @@ export default function CookieModal() {
     if (typeof window === "undefined") return;
     (window as any)[`ga-disable-${GA_MEASUREMENT_ID}`] = true;
   };
+
+  useEffect(() => {
+    const consent = localStorage.getItem("novidia_cookie_consent");
+    if (!consent) {
+      setShowModal(true);
+    } else {
+      try {
+        const parsed = JSON.parse(consent);
+        if (parsed.analytics) {
+          loadGA();
+        } else {
+          disableGA();
+        }
+      } catch (e) {
+        setShowModal(true);
+      }
+    }
+  }, []);
 
   const handleAcceptAll = () => {
     localStorage.setItem(
@@ -91,52 +91,47 @@ export default function CookieModal() {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-110 bg-zinc-950/60 backdrop-blur-md flex items-center justify-center p-4 pointer-events-auto font-montserrat">
+      <div className={"fixed inset-0 z-110 bg-zinc-50/60 backdrop-blur-md flex items-center justify-center p-4 pointer-events-auto font-montserrat"}>
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="bg-white border border-zinc-200 shadow-2xl rounded-2xl p-6 md:p-8 max-w-md w-full flex flex-col gap-5 relative select-none"
+          className={"bg-white border border-zinc-200 shadow-2xl rounded-2xl p-6 md:p-8 max-w-md w-full flex flex-col gap-5 relative select-none"}
         >
-          {/* Header - Centered & Brand Blue Montserrat */}
-          <div className="w-full text-center">
-            <h3 className="font-extrabold text-xl text-main font-montserrat tracking-tight">
+          <div className={"w-full text-center"}>
+            <h3 className={"font-extrabold text-xl text-main font-montserrat tracking-tight"}>
               Ciasteczka? Gdzie?!
             </h3>
           </div>
 
-          {/* Short Text */}
-          <p className="text-sm text-zinc-500 font-medium leading-relaxed text-center">
+          <p className={"text-sm text-zinc-500 font-medium leading-relaxed text-center"}>
             Ta strona używa niezbędnych plików cookies do uwierzytelniania i zapisywania motywu. Korzystamy również z opcjonalnych plików cookies Google Analytics, aby ulepszać naszą witrynę.
           </p>
 
-          {/* Expanded preferences panel */}
           <AnimatePresence>
             {isExpanded && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="overflow-y-auto max-h-60 pr-1 flex flex-col gap-3.5 border-t border-zinc-100 pt-4"
+                className={"overflow-y-auto max-h-60 pr-1 flex flex-col gap-3.5 border-t border-zinc-100 pt-4"}
               >
-                {/* Essential Cookies */}
-                <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-zinc-50 border border-zinc-100">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-zinc-700">Niezbędne pliki (Essential)</span>
-                    <div className="w-8 h-4 rounded-full bg-main/30 flex items-center p-0.5 opacity-60 cursor-not-allowed">
-                      <div className="w-3.5 h-3.5 rounded-full bg-white translate-x-3.5 shadow-sm" />
+                <div className={"flex flex-col gap-1.5 p-3 rounded-xl bg-zinc-50 border border-zinc-100"}>
+                  <div className={"flex items-center justify-between"}>
+                    <span className={"text-xs font-bold text-zinc-700"}>Niezbędne pliki (Essential)</span>
+                    <div className={"w-8 h-4 rounded-full bg-main/30 flex items-center p-0.5 opacity-60 cursor-not-allowed"}>
+                      <div className={"w-3.5 h-3.5 rounded-full bg-white translate-x-3.5 shadow-sm"} />
                     </div>
                   </div>
-                  <p className="text-[10px] text-zinc-400 leading-relaxed font-medium">
+                  <p className={"text-[10px] text-zinc-500 leading-relaxed font-medium"}>
                     Umożliwiają poprawne działanie podstawowych funkcji witryny, takich jak motyw graficzny (theme), uwierzytelnianie użytkownika czy zapamiętywanie preferencji sesji. Nie można ich wyłączyć.
                   </p>
                 </div>
 
-                {/* Analytical Cookies (Google Analytics) */}
-                <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-zinc-50 border border-zinc-100">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-zinc-700">Analityczne (Google Analytics)</span>
+                <div className={"flex flex-col gap-1.5 p-3 rounded-xl bg-zinc-50 border border-zinc-100"}>
+                  <div className={"flex items-center justify-between"}>
+                    <span className={"text-xs font-bold text-zinc-700"}>Analityczne (Google Analytics)</span>
                     <button
                       type="button"
                       onClick={() => setAnalyticsEnabled(!analyticsEnabled)}
@@ -151,7 +146,7 @@ export default function CookieModal() {
                       />
                     </button>
                   </div>
-                  <p className="text-[10px] text-zinc-400 leading-relaxed font-medium">
+                  <p className={"text-[10px] text-zinc-500 leading-relaxed font-medium"}>
                     Pomagają nam zbierać anonimowe statystyki o ruchu na stronie w celu ulepszania naszych usług za pomocą narzędzia Google Analytics.
                   </p>
                 </div>
@@ -159,38 +154,36 @@ export default function CookieModal() {
             )}
           </AnimatePresence>
 
-          {/* Expand toggle (above buttons) */}
-          <div className="w-full flex justify-center mt-1">
+          <div className={"w-full flex justify-center mt-1"}>
             {!isExpanded ? (
               <button
                 onClick={() => setIsExpanded(true)}
-                className="py-1 text-xs font-bold text-main hover:underline cursor-pointer text-center w-full"
+                className={"py-1 text-xs font-bold text-main hover:underline cursor-pointer text-center w-full"}
               >
                 Dostosuj preferencje plików cookies
               </button>
             ) : (
               <button
                 onClick={() => setIsExpanded(false)}
-                className="py-1 text-xs font-bold text-zinc-400 hover:text-zinc-600 cursor-pointer text-center w-full"
+                className={"py-1 text-xs font-bold text-zinc-500 hover:text-zinc-600 cursor-pointer text-center w-full"}
               >
                 Zwiń opcje szczegółowe
               </button>
             )}
           </div>
 
-          {/* Buttons layout (below expand toggle) */}
-          <div className="flex flex-col gap-3">
+          <div className={"flex flex-col gap-3"}>
             {!isExpanded ? (
-              <div className="flex gap-3">
+              <div className={"flex gap-3"}>
                 <button
                   onClick={handleDenyAll}
-                  className="w-1/2 py-3 rounded-xl border border-zinc-200 text-zinc-600 hover:bg-zinc-50 font-bold text-sm transition-colors cursor-pointer"
+                  className={"w-1/2 py-3 rounded-xl border border-zinc-200 text-zinc-600 hover:bg-zinc-50 font-bold text-sm transition-colors cursor-pointer"}
                 >
                   Odrzuć opcjonalne
                 </button>
                 <button
                   onClick={handleAcceptAll}
-                  className="w-1/2 py-3 rounded-xl bg-main hover:brightness-110 text-white font-bold text-sm transition-all cursor-pointer shadow-md shadow-main/10"
+                  className={"w-1/2 py-3 rounded-xl bg-main hover:brightness-110 text-white font-bold text-sm transition-all cursor-pointer shadow-md shadow-main/10"}
                 >
                   Akceptuj wszystkie
                 </button>
@@ -198,7 +191,7 @@ export default function CookieModal() {
             ) : (
               <button
                 onClick={handleSavePreferences}
-                className="py-3 rounded-xl bg-main hover:brightness-110 text-white font-bold text-sm transition-all cursor-pointer shadow-md shadow-main/10 w-full"
+                className={"py-3 rounded-xl bg-main hover:brightness-110 text-white font-bold text-sm transition-all cursor-pointer shadow-md shadow-main/10 w-full"}
               >
                 Zatwierdź wybrane
               </button>
