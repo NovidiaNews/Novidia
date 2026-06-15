@@ -102,7 +102,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${fraunces.variable} ${montserrat.variable}`}>
-      <body className="bg-zinc-100">
+      <body className="bg-zinc-100 text-zinc-900 transition-colors duration-300">
         <Navbar navigation={[
           { id: "1", title: "Główna", url: "/" },
           { id: "2", title: "Tematy", url: "/topics" },

@@ -31,7 +31,14 @@ export async function GET(request: Request) {
 
         const data = await res.json();
 
-        const photos = (data.photos || []).map((p: any) => ({
+interface PexelsPhoto {
+    src: { original?: string; tiny?: string; small?: string };
+    avg_color?: string;
+    photographer?: string;
+}
+
+// ... (in the map function)
+        const photos = (data.photos || []).map((p: PexelsPhoto) => ({
             src: p.src?.original,
             preview: p.src?.tiny || p.src?.small,
             avgColor: p.avg_color || "#000000",

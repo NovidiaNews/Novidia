@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ImageSide from "../components/pexels/ImageSide";
 import PasswordInput from "../components/auth/PasswordInput";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Check, Mail, Shield, ArrowRight, Camera, Loader2, Upload, X } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -130,7 +130,7 @@ export default function RegisterPage() {
       const nameParam = encodeURIComponent(`${formData.firstName} ${formData.lastName}`.trim() || "User");
       const url = `https://ui-avatars.com/api/?name=${nameParam}&background=random&color=fff&size=200&bold=true`;
       if (!hasUploadedCustomImage) {
-        setSelectedAvatar(url);
+        setTimeout(() => setSelectedAvatar(url), 0);
       }
     }
   }, [formData.firstName, formData.lastName, hasUploadedCustomImage]);
@@ -146,10 +146,12 @@ export default function RegisterPage() {
     const minY = 96 - H / 2;
     const maxY = -96 + H / 2;
     
-    setCropOffset((prev) => ({
-      x: Math.max(minX, Math.min(maxX, prev.x)),
-      y: Math.max(minY, Math.min(maxY, prev.y)),
-    }));
+    setTimeout(() => {
+        setCropOffset((prev) => ({
+          x: Math.max(minX, Math.min(maxX, prev.x)),
+          y: Math.max(minY, Math.min(maxY, prev.y)),
+        }));
+    }, 0);
   }, [cropZoom, imageSize, cropImage]);
 
   // Verification timer countdown
@@ -418,10 +420,10 @@ export default function RegisterPage() {
     }
   };
 
-  const slideVariants = {
+  const slideVariants: Variants = {
     enter: { x: 100, opacity: 0 },
-    center: { x: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
-    exit: { x: -100, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } },
+    center: { x: 0, opacity: 1, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+    exit: { x: -100, opacity: 0, transition: { duration: 0.3, ease: [0.4, 0, 1, 1] } },
   };
 
   return (
@@ -449,18 +451,18 @@ export default function RegisterPage() {
                 transition={{ type: "spring", stiffness: 350, damping: 25 }}
                 className="relative pointer-events-auto"
               >
-                <div className="pointer-events-auto flex flex-col gap-1.5 max-w-sm min-w-[280px]">
+                <div className="pointer-events-auto flex flex-col gap-1.5 max-w-sm min-w-17.5">
                   {/* Above the main box: 2 bars, count badge, and close button */}
                   <div className="flex items-center justify-between gap-3 w-full px-1">
                     {/* 2 bars */}
-                    <div className="flex-grow flex items-center h-[4px] gap-2">
+                    <div className="grow flex items-center h-1 gap-2">
                       {/* Left part (filled) */}
                       <motion.div 
                         key={`${latestToast.id}-left`}
                         initial={{ flexGrow: 0, flexBasis: 0 }}
                         animate={{ flexGrow: 100 }}
                         transition={{ duration: 4, ease: "linear" }}
-                        className={`h-[4px] rounded-full ${latestToast.type === "error" ? "bg-red-500" : "bg-green-500"}`}
+                        className={`h-1 rounded-full ${latestToast.type === "error" ? "bg-red-500" : "bg-green-500"}`}
                       />
                       {/* Right part (empty) */}
                       <motion.div 
@@ -468,7 +470,7 @@ export default function RegisterPage() {
                         initial={{ flexGrow: 100, opacity: 1 }}
                         animate={{ flexGrow: 0, opacity: 0 }}
                         transition={{ duration: 4, ease: "linear" }}
-                        className="h-[4px] rounded-full bg-zinc-300"
+                        className="h-1 rounded-full bg-zinc-300"
                         style={{ flexBasis: 0 }}
                       />
                     </div>
@@ -538,14 +540,14 @@ export default function RegisterPage() {
           <div className="bg-white rounded-2xl p-6 w-full max-w-md flex flex-col gap-5 shadow-2xl">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-bold text-zinc-800 font-montserrat">Dostosuj awatar</h3>
-              <button onClick={() => setCropImage(null)} className="text-zinc-400 hover:text-zinc-600 cursor-pointer">
+              <button onClick={() => setCropImage(null)} className="text-zinc-500 hover:text-zinc-600 cursor-pointer">
                 <X size={20} />
               </button>
             </div>
 
             {/* Draggable Viewport Container */}
             <div 
-              className="w-full h-72 relative overflow-hidden bg-zinc-950 rounded-2xl flex items-center justify-center cursor-move"
+              className="w-full h-72 relative overflow-hidden bg-zinc-50 rounded-2xl flex items-center justify-center cursor-move"
               onMouseDown={handleDragStart}
               onMouseMove={handleDragMove}
               onMouseUp={handleDragEnd}
@@ -604,17 +606,17 @@ export default function RegisterPage() {
                 />
                 
                 {/* Custom Track & Handle Layout */}
-                <div className="w-full flex items-center h-[4px] gap-3 pointer-events-none z-0">
+                <div className="w-full flex items-center h-1 gap-3 pointer-events-none z-0">
                   {/* Left segment (filled) */}
                   <div 
-                    className="h-[4px] bg-main rounded-full transition-all duration-75"
+                    className="h-1 bg-main rounded-full transition-all duration-75"
                     style={{ flexGrow: Math.max(0.001, ((cropZoom - 1) / 2) * 100), flexBasis: 0 }}
                   />
                   {/* Handle */}
-                  <div className="w-[5px] h-[20px] rounded-full bg-main shrink-0" />
+                  <div className="w-1.25 h-5 rounded-full bg-main shrink-0" />
                   {/* Right segment (empty) */}
                   <div 
-                    className="h-[4px] bg-zinc-200 rounded-full transition-all duration-75"
+                    className="h-1 bg-zinc-200 rounded-full transition-all duration-75"
                     style={{ flexGrow: Math.max(0.001, 100 - ((cropZoom - 1) / 2) * 100), flexBasis: 0 }}
                   />
                 </div>
@@ -718,7 +720,7 @@ export default function RegisterPage() {
                             setFormData({ ...formData, firstName: e.target.value });
                             setErrors({ ...errors, firstName: false });
                           }}
-                          className={`w-1/2 h-14 rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-main focus:border-transparent placeholder:text-zinc-400 text-zinc-800 text-center text-sm ${
+                          className={`w-1/2 h-14 rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-main focus:border-transparent placeholder:text-zinc-500 text-zinc-800 text-center text-sm ${
                             errors.firstName ? "border-2 border-red-500 ring-2 ring-red-500/20" : "border border-zinc-200"
                           }`}
                         />
@@ -730,7 +732,7 @@ export default function RegisterPage() {
                             setFormData({ ...formData, lastName: e.target.value });
                             setErrors({ ...errors, lastName: false });
                           }}
-                          className={`w-1/2 h-14 rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-main focus:border-transparent placeholder:text-zinc-400 text-zinc-800 text-center text-sm ${
+                          className={`w-1/2 h-14 rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-main focus:border-transparent placeholder:text-zinc-500 text-zinc-800 text-center text-sm ${
                             errors.lastName ? "border-2 border-red-500 ring-2 ring-red-500/20" : "border border-zinc-200"
                           }`}
                         />
@@ -744,7 +746,7 @@ export default function RegisterPage() {
                           setFormData({ ...formData, email: e.target.value });
                           setErrors({ ...errors, email: false });
                         }}
-                        className={`w-full h-14 rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-main focus:border-transparent placeholder:text-zinc-400 text-zinc-800 text-center text-sm ${
+                        className={`w-full h-14 rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-main focus:border-transparent placeholder:text-zinc-500 text-zinc-800 text-center text-sm ${
                           errors.email ? "border-2 border-red-500 ring-2 ring-red-500/20" : "border border-zinc-200"
                         }`}
                       />
@@ -757,7 +759,7 @@ export default function RegisterPage() {
                           setFormData({ ...formData, username: e.target.value });
                           setErrors({ ...errors, username: false });
                         }}
-                        className={`w-full h-14 rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-main focus:border-transparent placeholder:text-zinc-400 text-zinc-800 text-center text-sm ${
+                        className={`w-full h-14 rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-main focus:border-transparent placeholder:text-zinc-500 text-zinc-800 text-center text-sm ${
                           errors.username ? "border-2 border-red-500 ring-2 ring-red-500/20" : "border border-zinc-200"
                         }`}
                       />
@@ -835,12 +837,20 @@ export default function RegisterPage() {
                     </form>
                   )}
 
-                  <p className="text-center text-zinc-400 text-xs mt-2">
-                    Masz już konto?{" "}
-                    <Link href="/login" className="text-main font-semibold hover:underline">
-                      Zaloguj się
-                    </Link>
-                  </p>
+                  <div className="flex flex-row gap-4 mt-4 justify-center items-center">
+                    <p className="text-center text-zinc-500 text-xs">
+                      Masz już konto?{" "}
+                      <Link href="/login" className="text-main font-semibold hover:underline">
+                        Zaloguj się
+                      </Link>
+                    </p>
+                    <div className="w-1 h-1 bg-zinc-300 rounded-full"></div>
+                    <p className="text-center text-zinc-500 text-xs">
+                      <Link href="/register/school" className="text-main font-semibold hover:underline">
+                        Zarejestruj się jako szkoła
+                      </Link>
+                    </p>
+                  </div>
                 </motion.div>
               )}
 
@@ -883,7 +893,7 @@ export default function RegisterPage() {
                           const val = e.target.value.replace(/[^0-9]/g, "").substring(0, 6);
                           setVerificationCode(val);
                         }}
-                        className="w-full h-14 rounded-xl border border-zinc-200 text-center font-semibold text-lg text-zinc-800 focus:outline-none focus:ring-2 focus:ring-main focus:border-transparent bg-white shadow-sm placeholder:text-zinc-400 placeholder:text-sm placeholder:font-normal"
+                        className="w-full h-14 rounded-xl border border-zinc-200 text-center font-semibold text-lg text-zinc-800 focus:outline-none focus:ring-2 focus:ring-main focus:border-transparent bg-white shadow-sm placeholder:text-zinc-500 placeholder:text-sm placeholder:font-normal"
                       />
 
                       <button
@@ -915,7 +925,7 @@ export default function RegisterPage() {
                   <div className="flex justify-center items-center text-xs mt-2 border-t border-zinc-200 pt-4">
                     <button
                       onClick={() => setStep("register")}
-                      className="text-zinc-400 hover:text-zinc-600 transition-colors font-medium cursor-pointer"
+                      className="text-zinc-500 hover:text-zinc-600 transition-colors font-medium cursor-pointer"
                     >
                       Zmień e-mail
                     </button>
@@ -953,7 +963,7 @@ export default function RegisterPage() {
                           <h2 className="text-lg font-bold text-zinc-800 font-montserrat mb-1">
                             Wybierz zdjęcie profilowe
                           </h2>
-                          <p className="text-xs text-zinc-400 font-montserrat">
+                          <p className="text-xs text-zinc-500 font-montserrat">
                             Wgraj własne zdjęcie lub przejdź dalej z domyślnym awatarem.
                           </p>
                         </div>

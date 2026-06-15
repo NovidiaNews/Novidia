@@ -26,34 +26,34 @@ export default function PasswordInput({
   showStrengthMeter = true,
 }: PasswordInputProps) {
   const [isRevealed, setIsRevealed] = useState(false);
-  const [strength, setStrength] = useState(0);
 
   // Calculate password strength (0 to 100)
-  useEffect(() => {
-    if (!value) {
-      setStrength(0);
-      return;
+  const calculateStrength = (password: string) => {
+    if (!password) {
+      return 0;
     }
 
     let score = 0;
     
     // Rule 1: Length >= 8
-    if (value.length >= 8) score += 20;
+    if (password.length >= 8) score += 20;
     
     // Rule 2: Contains lowercase
-    if (/[a-z]/.test(value)) score += 20;
+    if (/[a-z]/.test(password)) score += 20;
     
     // Rule 3: Contains uppercase
-    if (/[A-Z]/.test(value)) score += 20;
+    if (/[A-Z]/.test(password)) score += 20;
     
     // Rule 4: Contains numbers
-    if (/[0-9]/.test(value)) score += 20;
+    if (/[0-9]/.test(password)) score += 20;
     
     // Rule 5: Contains special characters
-    if (/[^a-zA-Z0-9]/.test(value)) score += 20;
+    if (/[^a-zA-Z0-9]/.test(password)) score += 20;
 
-    setStrength(score);
-  }, [value]);
+    return score;
+  };
+
+  const strength = calculateStrength(value);
 
   const toggleReveal = () => {
     setIsRevealed(!isRevealed);

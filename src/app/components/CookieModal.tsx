@@ -6,13 +6,38 @@ import { motion, AnimatePresence } from "framer-motion";
 const GA_MEASUREMENT_ID = "G-27CFRN327T";
 
 export default function CookieModal() {
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(() => {
+    if (typeof window !== "undefined") {
+      const consent = localStorage.getItem("novidia_cookie_consent");
+      if (!consent) return true;
+      try {
+        JSON.parse(consent);
+        return false;
+      } catch {
+        return true;
+      }
+    }
+    return false;
+  });
   const [isExpanded, setIsExpanded] = useState(false);
-  const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(() => {
+    if (typeof window !== "undefined") {
+      const consent = localStorage.getItem("novidia_cookie_consent");
+      if (consent) {
+        try {
+          const parsed = JSON.parse(consent);
+          return !!parsed.analytics;
+        } catch {
+          return false;
+        }
+      }
+    }
+    return false;
+  });
 
   const loadGA = () => {
     if (typeof window === "undefined") return;
-    delete (window as any)[`ga-disable-${GA_MEASUREMENT_ID}`];
+    delete (window as unknown as Record<string, unknown>)[`ga-disable-${GA_MEASUREMENT_ID}`];
 
     if (!document.getElementById("google-analytics-script")) {
       const script1 = document.createElement("script");
@@ -35,14 +60,12 @@ export default function CookieModal() {
 
   const disableGA = () => {
     if (typeof window === "undefined") return;
-    (window as any)[`ga-disable-${GA_MEASUREMENT_ID}`] = true;
+    (window as unknown as Record<string, unknown>)[`ga-disable-${GA_MEASUREMENT_ID}`] = true;
   };
 
   useEffect(() => {
     const consent = localStorage.getItem("novidia_cookie_consent");
-    if (!consent) {
-      setShowModal(true);
-    } else {
+    if (consent) {
       try {
         const parsed = JSON.parse(consent);
         if (parsed.analytics) {
@@ -50,8 +73,8 @@ export default function CookieModal() {
         } else {
           disableGA();
         }
-      } catch (e) {
-        setShowModal(true);
+      } catch {
+        // Handled by showModal initializer
       }
     }
   }, []);

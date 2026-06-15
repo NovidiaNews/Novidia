@@ -95,7 +95,7 @@ export default function PexelsBackdrop() {
   }, []);
 
   return (
-    <div className="w-full h-full rounded-2xl overflow-hidden relative pointer-events-auto">
+    <div className="w-full h-full rounded-2xl overflow-hidden relative pointer-events-auto hidden md:block">
       <div
         className="absolute inset-0 transition-colors duration-500"
         style={{ backgroundColor: image.avgColor || "#000" }}
